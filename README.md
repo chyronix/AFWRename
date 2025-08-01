@@ -22,7 +22,7 @@ A cross-platform desktop application built with Python and PySide6 to visually s
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repo-url>
+    git clone https://github.com/chyronix/AFWRename.git
     cd image-renamer
     ```
 
