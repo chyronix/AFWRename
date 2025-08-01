@@ -16,7 +16,6 @@ A cross-platform desktop application built with Python and PySide6 to visually s
 -   **Language**: Python 3.10+
 -   **GUI Framework**: PySide6
 -   **Image Handling**: Pillow
--   **Packaging**: PyInstaller
 
 ## How to Run
 
@@ -40,26 +39,3 @@ A cross-platform desktop application built with Python and PySide6 to visually s
 4.  **Run the application:**
     ```bash
     python main.py
-    ```
-
-## How to Package
-
-PyInstaller can be used to create a standalone executable for Windows or Linux.
-
-1.  **Install PyInstaller:**
-    ```bash
-    pip install pyinstaller
-    ```
-
-2.  **Package the application:**
-    
-    For Windows (.exe):
-    ```bash
-    pyinstaller --onefile --windowed --name ImageRenamer main.py
-    ```
-
-    For Linux:
-    ```bash
-    pyinstaller --onefile --windowed --name ImageRenamer main.py
-    ```
-The executable will be located in the `dist` directory.
