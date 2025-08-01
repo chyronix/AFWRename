@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / C extensions
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+/build/
+/dist/
+/eggs/
+/*.egg-info/
+/*.spec
+AppDir/
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+
+# IDE / Editor specific files
+.idea/
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
