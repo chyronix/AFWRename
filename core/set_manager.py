@@ -1,4 +1,5 @@
-# image-renamer/core/set_manager.py
+# AFWRename/core/set_manager.py
+
 from collections import deque
 
 class SetManager:
@@ -15,24 +16,27 @@ class SetManager:
 
         Args:
             set_size (int): The number of images in this set type (1, 2, or 3).
-            image_paths (list[str]): The list of image file paths.
+            image_paths (list[str]): The list of image file paths from the primary folder.
         """
-        if not image_paths or len(image_paths) != set_size:
+        if not image_paths:
+            return None
+        
+        # For sets of 2 or 3, we must have the exact number of images.
+        if set_size > 1 and len(image_paths) != set_size:
             return None
 
         key_prefix = f"set{set_size}"
         if set_size > 1:
             self._counters[key_prefix] += 1
             set_name = f"{key_prefix}-no{self._counters[key_prefix]}"
-        else:
-            set_name = key_prefix
-        
-        if set_name in self.sets:
-             self.sets[set_name].extend(image_paths)
-        else:
             self.sets[set_name] = image_paths
+        else: # set1 case
+            # For set1, we can add multiple images/groups to the same set name.
+            set_name = key_prefix
+            if set_name not in self.sets:
+                self.sets[set_name] = []
+            self.sets[set_name].extend(image_paths)
 
-        # For undo functionality
         history_entry = (set_name, image_paths)
         self.history.append(history_entry)
         return set_name
@@ -49,7 +53,7 @@ class SetManager:
             self._counters[prefix] -= 1
             del self.sets[last_set_name]
         else: # set1 case
-            # Remove the specific images from the list
+            # Remove only the specific images that were last added
             self.sets[last_set_name] = [
                 img for img in self.sets[last_set_name] if img not in last_images
             ]

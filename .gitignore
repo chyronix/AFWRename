@@ -7,8 +7,12 @@ __pycache__/
 # Distribution / packaging
 /build/
 /dist/
+/installer_output/
+/downloads/
 /eggs/
 /*.egg-info/
+/sdist/
+/wheels/
 /*.spec
 AppDir/
 
@@ -21,10 +25,9 @@ venv/
 # IDE / Editor specific files
 .idea/
 .vscode/
+*.swp
+*.swo
 
 # OS-specific files
 .DS_Store
 Thumbs.db
-
-# Linux AppBuilder
-appimage-builder.yml

@@ -1,9 +1,10 @@
-# image-renamer/main.py
+# AFWRename/main.py
+
 import sys
 from PySide6.QtWidgets import QApplication
 from ui.main_window import MainWindow
 
-# Define the color palette from the tokens
+# The color palette for the application's theme
 COLORS = {
     "brand-bg": "#0B0F19",
     "brand-fg": "#F8FAFC",
@@ -17,7 +18,7 @@ COLORS = {
     "brand-input": "#273349",
 }
 
-# Define the Qt StyleSheet (QSS)
+# The global stylesheet (QSS) that applies the theme
 STYLESHEET = f"""
     QMainWindow, QWidget {{
         background-color: {COLORS["brand-bg"]};
@@ -47,7 +48,7 @@ STYLESHEET = f"""
     QListWidget::item {{
         color: {COLORS["brand-fg"]};
         padding: 5px;
-        border-radius: 3px; /* For selection highlight */
+        border-radius: 3px;
     }}
     QListWidget::item:selected {{
         background-color: {COLORS["brand-primary"]};
@@ -68,21 +69,19 @@ STYLESHEET = f"""
     QPushButton:pressed {{
         background-color: {COLORS["brand-input"]};
     }}
-    /* Primary Action Button */
     QPushButton#process_btn {{
         background-color: {COLORS["brand-primary"]};
         color: {COLORS["brand-primary-fg"]};
     }}
     QPushButton#process_btn:hover {{
-        background-color: #D84884; /* A slightly darker shade for hover */
+        background-color: #D84884;
     }}
-    /* Destructive Action Buttons */
     QPushButton#undo_btn, QPushButton#reset_btn {{
         background-color: {COLORS["brand-destructive"]};
         color: {COLORS["brand-fg"]};
     }}
     QPushButton#undo_btn:hover, QPushButton#reset_btn:hover {{
-        background-color: #9C2C2C; /* A slightly darker shade for hover */
+        background-color: #9C2C2C;
     }}
     QRadioButton {{
         color: {COLORS["brand-fg"]};
@@ -121,11 +120,14 @@ STYLESHEET = f"""
     QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
         height: 0px;
     }}
+    QLabel {{
+        padding-left: 5px;
+    }}
 """
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyleSheet(STYLESHEET)  # Apply the stylesheet
+    app.setStyleSheet(STYLESHEET)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

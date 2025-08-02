@@ -1,44 +1,65 @@
-# image-renamer/core/renamer.py
+# AFWRename/core/renamer.py
+
 import shutil
 from pathlib import Path
+import re
 
-def rename_files(sets: dict, output_dir: str = None):
-    """
-    Renames or copies files based on the provided sets.
+# This regex finds a number in parentheses, e.g., "(247)", to use as a unique ID.
+ID_PATTERN = re.compile(r'\((\d+)\)\.[a-zA-Z]+$')
 
-    Args:
-        sets (dict): The dictionary of sets from SetManager.
-        output_dir (str, optional): If provided, copies files to this directory. 
-                                    Otherwise, renames them in-place.
+def find_file_by_id(folder: Path, image_id: str):
+    """Scans a folder to find a file whose name contains the given unique ID."""
+    for file_path in folder.iterdir():
+        match = ID_PATTERN.search(file_path.name)
+        if match and match.group(1) == image_id:
+            return file_path
+    return None
+
+def rename_files(
+    sets: dict,
+    primary_folder: Path,
+    synced_folders: list[Path],
+    output_dir: str | None = None
+):
     """
-    if output_dir:
-        output_path = Path(output_dir)
-        output_path.mkdir(parents=True, exist_ok=True)
+    Renames files based on sets. In sync mode, it uses a unique ID
+    extracted from the filename to rename corresponding files across all folders.
+    """
+    all_target_folders = [primary_folder] + synced_folders
     
-    renamed_files = []
+    renamed_files_log = []
+    set1_counter = 0
+    sorted_set_names = sorted(sets.keys())
 
-    for set_name, images in sets.items():
-        if set_name.startswith("set1"):
-             for i, old_path_str in enumerate(images):
-                old_path = Path(old_path_str)
-                new_name = f"set1 ({i + 1}){old_path.suffix}"
-                new_path = output_path / new_name if output_dir else old_path.with_name(new_name)
+    for set_name in sorted_set_names:
+        primary_image_paths = sets[set_name]
+        is_set1 = set_name.startswith("set1")
+        
+        for i, primary_path_str in enumerate(primary_image_paths):
+            old_primary_path = Path(primary_path_str)
+            
+            match = ID_PATTERN.search(old_primary_path.name)
+            if not match:
+                print(f"Warning: Could not find a unique ID in '{old_primary_path.name}'. Skipping.")
+                continue
+
+            image_id = match.group(1)
+
+            if is_set1:
+                set1_counter += 1
+                new_base_name = f"set1 ({set1_counter})"
+            else:
+                new_base_name = f"{set_name} ({i + 1})"
+
+            for folder in all_target_folders:
+                file_to_rename = find_file_by_id(folder, image_id)
                 
-                if output_dir:
-                    shutil.copy2(old_path, new_path)
+                if file_to_rename and file_to_rename.exists():
+                    new_full_name = f"{new_base_name}{file_to_rename.suffix}"
+                    new_path = folder / new_full_name
+                    file_to_rename.rename(new_path)
+                    renamed_files_log.append((str(file_to_rename), str(new_path)))
                 else:
-                    old_path.rename(new_path)
-                renamed_files.append((old_path_str, str(new_path)))
-        else:
-            for i, old_path_str in enumerate(images):
-                old_path = Path(old_path_str)
-                new_name = f"{set_name} ({i + 1}){old_path.suffix}"
-                new_path = output_path / new_name if output_dir else old_path.with_name(new_name)
+                    print(f"Warning: No matching file for ID '({image_id})' found in '{folder.name}'.")
 
-                if output_dir:
-                    shutil.copy2(old_path, new_path)
-                else:
-                    old_path.rename(new_path)
-                renamed_files.append((old_path_str, str(new_path)))
-    
-    return renamed_files
+    return renamed_files_log
